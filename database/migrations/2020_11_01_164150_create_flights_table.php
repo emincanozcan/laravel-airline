@@ -16,6 +16,7 @@ class CreateFlightsTable extends Migration
         Schema::create('flights', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('capacity');
+            $table->unsignedInteger('sold_count');
             $table->unsignedBigInteger('departure_airport');
             $table->timestamp('departure_time');
             $table->unsignedBigInteger('arrival_airport');

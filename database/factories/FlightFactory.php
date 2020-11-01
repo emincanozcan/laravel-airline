@@ -38,6 +38,7 @@ class FlightFactory extends Factory
             'arrival_airport' => $airport2->id,
             'departure_time' => $date1,
             'arrival_time' => $date2,
+            'price' => rand(10000, 99999) / 100
         ];
     }
 }

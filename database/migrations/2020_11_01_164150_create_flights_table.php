@@ -20,6 +20,7 @@ class CreateFlightsTable extends Migration
             $table->timestamp('departure_time');
             $table->unsignedBigInteger('arrival_airport');
             $table->timestamp('arrival_time');
+            $table->double('price');
 
             $table->foreign('departure_airport')->references('id')->on('airports');
             $table->foreign('arrival_airport')->references('id')->on('airports');

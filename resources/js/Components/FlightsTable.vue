@@ -1,10 +1,11 @@
 <template>
-  <table class="table-fixed w-full">
+  <table class="table-auto w-full">
     <thead>
       <tr>
         <th class="px-4 py-2">From</th>
         <th class="px-4 py-2">To</th>
         <th class="px-4 py-2">Price</th>
+        <th class="px-4 py-2">Capacity</th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +36,9 @@
         </td>
         <td class="border px-4 py-2 text-center">
           {{ flight.price }}
+        </td>
+        <td class="border px-4 py-2 text-center">
+          {{ flight.sold_count }} / {{ flight.capacity }}
         </td>
       </tr>
     </tbody>

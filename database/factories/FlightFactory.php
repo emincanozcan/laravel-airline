@@ -32,8 +32,10 @@ class FlightFactory extends Factory
         }
         $date1 = Carbon::now()->addHours(rand(4, 24))->toDateTimeString();
         $date2 = Carbon::parse($date1)->addHours(rand(4, 36))->toDateTimeString();
+        $capacity = rand(120, 240);
         return [
-            'capacity' => rand(120, 240),
+            'capacity' => $capacity,
+            'sold_count' => rand(0, $capacity),
             'departure_airport' => $airport1->id,
             'arrival_airport' => $airport2->id,
             'departure_time' => $date1,

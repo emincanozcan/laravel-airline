@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Airport;
 use App\Models\Flight;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,9 +17,31 @@ class FlightController extends Controller
      */
     public function index()
     {
-        $flights = Flight::with(['departureAirport', 'arrivalAirport'])->paginate(20);
+        $flights = Flight::query();
+        $airports = Airport::all();
+        if ($filter = request()->get('filter')) {
+            if ($filter === 'future') {
+                $flights = $flights->where('departure_time', '>', Carbon::now()->toDateTimeString());
+            }
+            if ($filter === 'past') {
+                $flights = $flights->where('arrival_time', '<', Carbon::now()->toDateTimeString());
+            }
+            if ($filter === 'fly') {
+                $flights = $flights
+                    ->where('departure_time', '<', Carbon::now()->toDateTimeString())
+                    ->where('arrival_time', '>', Carbon::now()->toDateTimeString());
+            }
+        }
+        if ($from = request()->get('from')) {
+            $flights = $flights->where('departure_airport', $from);
+        }
+        if ($to = request()->get('to')) {
+            $flights = $flights->where('arrival_airport', $to);
+        }
+        $flights = $flights->with(['departureAirport', 'arrivalAirport'])->paginate(10);
         return Inertia::render('Flight/Index', [
-            'flights' => $flights
+            'flights' => $flights,
+            'airports' => $airports
         ]);
     }
 

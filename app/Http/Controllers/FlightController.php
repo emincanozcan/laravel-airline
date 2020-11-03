@@ -6,6 +6,7 @@ use App\Models\Airport;
 use App\Models\Flight;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class FlightController extends Controller
@@ -52,18 +53,33 @@ class FlightController extends Controller
      */
     public function create()
     {
-        //
+        $airports = Airport::all();
+        return Inertia::render('Flight/Create', [
+            'airports' => $airports
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validateWithBag('createFlight', [
+            'departureDate' => 'required',
+            'departureAirport' => 'required',
+            'arrivalDate' => 'required',
+            'arrivalAirport' => 'required',
+            'price' => 'required|regex:/^[0-9]+(\.[0-9][0-9]?)?$/',
+            'capacity' => 'required|numeric',
+        ]);
+
+        $flight = new Flight();
+        $flight->arrival_airport = $validatedData['arrivalAirport'];
+        $flight->departure_airport = $validatedData['departureAirport'];
+        $flight->price = $validatedData['price'];
+        $flight->capacity = $validatedData['capacity'];
+        $flight->departure_time = Carbon::createFromFormat('Y-m-d H:i', $validatedData['departureDate'])->toDateTimeString();
+        $flight->arrival_time = Carbon::createFromFormat('Y-m-d H:i', $validatedData['arrivalDate'])->toDateTimeString();
+        $flight->sold_count = 0;
+        $flight->save();
+
+        return Redirect::route('flights.create');
     }
 
     /**

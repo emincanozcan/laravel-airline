@@ -11,7 +11,7 @@
         @click="() => filterResults('filter', 'fly')"
         :disabled="activeFilter === 'fly'"
       >
-        Fly
+        Flying
       </Button>
       <Button
         @click="() => filterResults('filter', 'future')"

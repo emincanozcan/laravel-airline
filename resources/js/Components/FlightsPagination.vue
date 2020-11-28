@@ -52,7 +52,7 @@ export default {
       for (var value of params.keys()) {
         paramObj[value] = params.get(value);
       }
-      paramObj["page"] = page;
+      paramObj["page"] = trimmedPage;
       this.$inertia.get(`/dashboard/flights`, paramObj);
     },
   },

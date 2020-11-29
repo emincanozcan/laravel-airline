@@ -13,7 +13,7 @@
             <h1 class="text-3xl">Flight List</h1>
           </div>
           <div>
-            <flights-filters class="px-8 mb-4" :airports="airports"/>
+            <flights-filters class="px-8 mb-4" :airports="airports" />
           </div>
 
           <div class="mx-8 mb-6">
@@ -39,7 +39,7 @@ import FlightsTable from "@/Components/FlightsTable";
 import FlightsFilters from "@/Components/FlightsFilters";
 import FlightsPagination from "@/Components/FlightsPagination";
 export default {
-  props: ["flights","airports"],
+  props: ["flights", "airports"],
   components: {
     FlightsTable,
     AppLayout,

@@ -30,8 +30,8 @@ class FlightFactory extends Factory
                 $airport2 = Airport::inRandomOrder()->first();
             }
         }
-        $date1 = Carbon::now()->addDays(rand(-5, 5))->addHours(rand(4, 24))->addMinutes(rand(0, 60))->second(0)->toDateTimeString();
-        $date2 = Carbon::parse($date1)->addHours(rand(4, 36))->addMinutes(rand(0, 60))->toDateTimeString();
+        $date1 = Carbon::now()->addDays(rand(-3, 10))->addHours(rand(4, 24))->addMinutes(rand(0, 60))->second(0)->toDateTimeString();
+        $date2 = Carbon::parse($date1)->addHours(rand(2, 12))->addMinutes(rand(10, 60))->toDateTimeString();
         $capacity = rand(120, 240);
         return [
             'capacity' => $capacity,

@@ -31,6 +31,7 @@ class HomeController extends Controller
             foreach ($directFlights as $k => $v) {
                 $flightTime = Carbon::parse($v->arrival_time)->diffInMinutes(Carbon::parse($v->departure_time));
                 $directFlights[$k]['time'] = $flightTime;
+                $directFlights[$k]['price'] = $v->price * request()->get('passengerCount');
             }
 
 
@@ -39,6 +40,7 @@ class HomeController extends Controller
                 ->where("departure_time", "<", $endDate->toDateTimeString())
                 ->where("departure_time", ">", $startDate->toDateTimeString())
                 ->where("departure_time", ">", Carbon::now()->toDateTimeString())
+                ->whereRaw('capacity > (sold_count + ? - 1)', [request()->get('passengerCount')])
                 ->where('departure_airport', request()->get('departureAirport'))
                 ->get();
 
@@ -53,7 +55,8 @@ class HomeController extends Controller
                     $q->where('departure_airport', $flight->arrival_airport)
                         ->where('arrival_airport', request()->get('arrivalAirport'))
                         ->where('departure_time', '>', $minDepTime->toDateTimeString())
-                        ->where('departure_time', '<', $maxDepTime->toDateTimeString());
+                        ->where('departure_time', '<', $maxDepTime->toDateTimeString())
+                        ->whereRaw('capacity > (sold_count + ? - 1)', [request()->get('passengerCount')]);
                 });
             });
 
@@ -62,7 +65,7 @@ class HomeController extends Controller
             $startPointFlights->each(function ($startFlight) use ($endPointFlights, &$connectedFlights) {
                 $endPointFlights->each(function ($endFlight) use ($startFlight, &$connectedFlights) {
                     if ($startFlight->arrival_airport == $endFlight->departure_airport) {
-                        $price = $startFlight->price + $endFlight->price;
+                        $price = ($startFlight->price + $endFlight->price) * request()->get('passengerCount');
                         $flightTime = Carbon::parse($endFlight->arrival_time)->diffInMinutes(Carbon::parse($startFlight->departure_time));
                         $connectedFlights[] = [
                             'price' => $price,

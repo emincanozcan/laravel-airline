@@ -6094,36 +6094,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -6159,6 +6129,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
 
     console.log(this.flights);
+
+    if (this.flights) {
+      this.organizeFlights();
+    }
   },
   data: function data() {
     return {
@@ -6172,7 +6146,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         enableTime: false,
         minDate: moment().format('Y-M-D'),
         dateFormat: 'Y-m-d'
-      }
+      },
+      flightList: []
     };
   },
   methods: {
@@ -6190,7 +6165,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       routeQueue.forEach(function (item, key) {
         return str += item + (routeQueue[key + 1] ? ' -> ' : '');
       });
-      return str; // {{ flight.departure_airport.full_name }} -> {{ flight.arrival_airport.full_name }}
+      return str;
+    },
+    organizeFlights: function organizeFlights() {
+      var flightListData = [];
+      this.flights.direct.forEach(function (flight) {
+        return flightListData.push({
+          from: {
+            time: moment(flight['departure_time']).format('HH:mm'),
+            airport: flight['departure_airport']['code_name']
+          },
+          to: {
+            time: moment(flight['arrival_time']).format('HH:mm'),
+            airport: flight['arrival_airport']['code_name']
+          },
+          via: false,
+          price: flight.price.toFixed(2),
+          time: flight.time
+        });
+      });
+      this.flights.connected.forEach(function (connectedFlight) {
+        flightListData.push({
+          from: {
+            time: moment(connectedFlight.flights[0]['departure_time']).format('HH:mm'),
+            airport: connectedFlight.flights[0]['departure_airport']['code_name']
+          },
+          to: {
+            time: moment(connectedFlight.flights[1]['arrival_time']).format('HH:mm'),
+            airport: connectedFlight.flights[1]['arrival_airport']['code_name']
+          },
+          via: {
+            airport: connectedFlight.flights[0]['arrival_airport']['full_name']
+          },
+          price: connectedFlight.price.toFixed(2),
+          time: connectedFlight.time
+        });
+      });
+      this.flightList = flightListData;
     },
     searchFlights: function searchFlights() {
       var _this = this;
@@ -34028,7 +34039,7 @@ var render = function() {
                                 _vm.searchFlightsForm.departureAirport == ""
                             }
                           },
-                          [_vm._v("Select Departure Airport")]
+                          [_vm._v("Departure Airport")]
                         ),
                         _vm._v(" "),
                         _vm._l(_vm.airports, function(airport) {
@@ -34089,7 +34100,7 @@ var render = function() {
                                 _vm.searchFlightsForm.arrivalAirport == ""
                             }
                           },
-                          [_vm._v("Select Arrival Airport")]
+                          [_vm._v("Arrival Airport")]
                         ),
                         _vm._v(" "),
                         _vm._l(_vm.airports, function(airport) {
@@ -34206,62 +34217,201 @@ var render = function() {
                 [_vm._v("Flight List")]
               ),
               _vm._v(" "),
-              _c("div", { staticClass: "mt-4" }, [
-                _c("table", { staticClass: "table-auto w-full" }, [
-                  _vm._m(1),
-                  _vm._v(" "),
-                  _c(
-                    "tbody",
+              _c(
+                "div",
+                { staticClass: "mt-4" },
+                _vm._l(_vm.flightList, function(flight, key) {
+                  return _c(
+                    "div",
+                    {
+                      key: key,
+                      staticClass:
+                        "flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200"
+                    },
                     [
-                      _vm._l(_vm.flights.direct, function(flight) {
-                        return _c("tr", { key: flight.id }, [
-                          _c("td", [
-                            _vm._v(
-                              _vm._s(flight.departure_airport.full_name) +
-                                " -> " +
-                                _vm._s(flight.arrival_airport.full_name)
-                            )
-                          ]),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "flex items-center",
+                          staticStyle: { flex: "2" }
+                        },
+                        [
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex flex-col justify-start items-start w-24"
+                            },
+                            [
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "text-sm text-gray-700 font-medium"
+                                },
+                                [_vm._v(_vm._s(flight.from.airport))]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "text-2xl text-gray-900 font-bold tracking-tighter"
+                                },
+                                [_vm._v(_vm._s(flight.from.time))]
+                              )
+                            ]
+                          ),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(flight.time) + " minutes")]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(flight.price))]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v("Direct")])
-                        ])
-                      }),
-                      _vm._v(" "),
-                      _vm._l(_vm.flights.connected, function(
-                        connectedFlight,
-                        key
-                      ) {
-                        return _c("tr", { key: "c" + key }, [
-                          _c("td", [
-                            _vm._v(
-                              "\n                " +
-                                _vm._s(
-                                  _vm.getRouteForConnectedFlight(
-                                    connectedFlight.flights
+                          _c("div", { staticClass: "mx-auto" }, [
+                            flight.via !== false
+                              ? _c("div", [
+                                  _c(
+                                    "p",
+                                    {
+                                      staticClass:
+                                        "text-sm text-gray-500 text-center"
+                                    },
+                                    [
+                                      _vm._v(
+                                        "Via " + _vm._s(flight.via.airport)
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "svg",
+                                    {
+                                      staticClass: "w-20 my-2 mx-auto",
+                                      attrs: {
+                                        xmlns: "http://www.w3.org/2000/svg",
+                                        viewBox: "0 0 72 12",
+                                        id: "icon-arrow-way-stop"
+                                      }
+                                    },
+                                    [
+                                      _c("path", {
+                                        attrs: {
+                                          fill: "#C8CACC",
+                                          "fill-rule": "evenodd",
+                                          d:
+                                            "M39.952 6.623a4.001 4.001 0 11-.037-1.448h29.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H39.915a4.49 4.49 0 00.037-.202zM7.915 5.175h24.17a4.017 4.017 0 000 1.65H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825zM36 9a3 3 0 100-6 3 3 0 000 6z"
+                                        }
+                                      })
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "p",
+                                    {
+                                      staticClass:
+                                        "text-sm text-gray-500 text-center"
+                                    },
+                                    [
+                                      _vm._v(
+                                        _vm._s(Math.floor(flight.time / 60)) +
+                                          " hours " +
+                                          _vm._s(flight.time % 60) +
+                                          " minutes"
+                                      )
+                                    ]
                                   )
-                                ) +
-                                "\n                "
-                            )
+                                ])
+                              : _c("div", [
+                                  _c(
+                                    "p",
+                                    {
+                                      staticClass:
+                                        "text-sm text-gray-500 text-center"
+                                    },
+                                    [_vm._v("Direct Flight")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "svg",
+                                    {
+                                      staticClass: "w-20 mx-auto my-2",
+                                      attrs: {
+                                        xmlns: "http://www.w3.org/2000/svg",
+                                        viewBox: "0 0 72 12",
+                                        id: "icon-arrow-way"
+                                      }
+                                    },
+                                    [
+                                      _c("path", {
+                                        attrs: {
+                                          fill: "#C8CACC",
+                                          "fill-rule": "evenodd",
+                                          d:
+                                            "M7.915 5.175h61.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825z"
+                                        }
+                                      })
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "p",
+                                    {
+                                      staticClass:
+                                        "text-sm text-gray-500 text-center"
+                                    },
+                                    [
+                                      _vm._v(
+                                        _vm._s(Math.floor(flight.time / 60)) +
+                                          " hours " +
+                                          _vm._s(flight.time % 60) +
+                                          " minutes"
+                                      )
+                                    ]
+                                  )
+                                ])
                           ]),
                           _vm._v(" "),
-                          _c("td", [
-                            _vm._v(_vm._s(connectedFlight.time) + " minutes")
-                          ]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(connectedFlight.price))]),
-                          _vm._v(" "),
-                          _c("td", [_vm._v("Connected")])
-                        ])
-                      })
-                    ],
-                    2
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex flex-col justify-start items-start w-24"
+                            },
+                            [
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "text-sm text-gray-700 font-medium"
+                                },
+                                [_vm._v(_vm._s(flight.to.airport))]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "text-2xl text-gray-900 font-bold tracking-tighter"
+                                },
+                                [_vm._v(_vm._s(flight.to.time))]
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "flex-1 flex items-center justify-end" },
+                        [
+                          _c(
+                            "span",
+                            { staticClass: "text-2xl font-bold text-gray-900" },
+                            [_vm._v(" $" + _vm._s(flight.price) + " ")]
+                          )
+                        ]
+                      )
+                    ]
                   )
-                ])
-              ])
+                }),
+                0
+              )
             ]
           )
         : _vm._e()
@@ -34278,22 +34428,6 @@ var staticRenderFns = [
         _c("h1", { staticClass: "font-semibold text-3xl text-white" }, [
           _vm._v("Evolution Airline")
         ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", { staticClass: "px-4 py-2" }, [_vm._v("Route")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "px-4 py-2" }, [_vm._v("Flight Time")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "px-4 py-2" }, [_vm._v("Price")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "px-4 py-2" }, [_vm._v("Type")])
       ])
     ])
   }

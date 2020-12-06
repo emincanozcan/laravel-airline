@@ -28,7 +28,7 @@ class ConnectedFlightService
 
     $startPointFlights->each(function ($startFlight) use ($endPointFlights, &$connectedFlights, $passengerCount) {
       $endPointFlights->each(function ($endFlight) use ($startFlight, &$connectedFlights, $passengerCount) {
-        if ($startFlight->arrival_airport == $endFlight->departure_airport) {
+        if ($startFlight->arrival_airport == $endFlight->departure_airport && $endFlight->departure_time > $startFlight->arrival_time) {
           $price = ($startFlight->price + $endFlight->price) * $passengerCount;
           $flightTime = Carbon::parse($endFlight->arrival_time)->diffInMinutes(Carbon::parse($startFlight->departure_time));
           $connectedFlights[] = [

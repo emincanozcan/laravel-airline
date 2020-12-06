@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\FlightController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Back\FlightController;
+use App\Http\Controllers\Front\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*

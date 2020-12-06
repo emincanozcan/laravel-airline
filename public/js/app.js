@@ -5948,19 +5948,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["flights", "airports"],
+  props: ['flights', 'airports'],
   components: {
     FlightsTable: _Components_FlightsTable__WEBPACK_IMPORTED_MODULE_1__["default"],
     AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -6111,33 +6104,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   mounted: function mounted() {
     var params = new URLSearchParams(window.location.search);
-
-    if (params.has('departureAirport')) {
-      this.searchFlightsForm.departureAirport = params.get('departureAirport');
-    }
-
-    if (params.has('arrivalAirport')) {
-      this.searchFlightsForm.arrivalAirport = params.get('arrivalAirport');
-    }
-
-    if (params.has('departureDate')) {
-      this.searchFlightsForm.departureDate = params.get('departureDate');
-    }
-
-    if (params.has('passengerCount')) {
-      this.searchFlightsForm.passengerCount = parseInt(params.get('passengerCount'));
-    }
-
-    console.log(this.flights);
-
-    if (this.flights) {
-      this.organizeFlights();
-    }
+    this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
+    this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
+    this.searchFlightsForm.departureDate = params.has('departureDate') ? params.get('departureDate') : moment().add(1, 'days').format('Y-M-D');
+    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? params.get('passengerCount') : 1;
+    this.flights && this.organizeFlights();
   },
   data: function data() {
     return {
       searchFlightsForm: {
-        departureDate: moment().add(1, 'days').format('Y-M-D'),
+        departureDate: null,
         departureAirport: '',
         arrivalAirport: '',
         passengerCount: 1
@@ -6151,33 +6127,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     };
   },
   methods: {
-    getRouteForConnectedFlight: function getRouteForConnectedFlight(connectedFlights) {
-      var routeQueue = [];
-      var data = Object.values(connectedFlights);
-      data.forEach(function (flight, key) {
-        routeQueue.push(flight.departure_airport.full_name);
-
-        if (!data[key + 1]) {
-          routeQueue.push(flight.arrival_airport.full_name);
-        }
-      });
-      var str = '';
-      routeQueue.forEach(function (item, key) {
-        return str += item + (routeQueue[key + 1] ? ' -> ' : '');
-      });
-      return str;
-    },
     organizeFlights: function organizeFlights() {
       var flightListData = [];
       this.flights.direct.forEach(function (flight) {
         return flightListData.push({
           from: {
             time: moment(flight['departure_time']).format('HH:mm'),
-            airport: flight['departure_airport']['code_name']
+            airport: flight['departure_airport']
           },
           to: {
             time: moment(flight['arrival_time']).format('HH:mm'),
-            airport: flight['arrival_airport']['code_name']
+            airport: flight['arrival_airport']
           },
           via: false,
           price: flight.price.toFixed(2),
@@ -6188,14 +6148,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         flightListData.push({
           from: {
             time: moment(connectedFlight.flights[0]['departure_time']).format('HH:mm'),
-            airport: connectedFlight.flights[0]['departure_airport']['code_name']
+            airport: connectedFlight.flights[0]['departure_airport']
           },
           to: {
             time: moment(connectedFlight.flights[1]['arrival_time']).format('HH:mm'),
-            airport: connectedFlight.flights[1]['arrival_airport']['code_name']
+            airport: connectedFlight.flights[1]['arrival_airport']
           },
           via: {
-            airport: connectedFlight.flights[0]['arrival_airport']['full_name']
+            airport: connectedFlight.flights[0]['arrival_airport']
           },
           price: connectedFlight.price.toFixed(2),
           time: connectedFlight.time
@@ -34249,7 +34209,7 @@ var render = function() {
                                   staticClass:
                                     "text-sm text-gray-700 font-medium"
                                 },
-                                [_vm._v(_vm._s(flight.from.airport))]
+                                [_vm._v(_vm._s(flight.from.airport.code_name))]
                               ),
                               _vm._v(" "),
                               _c(
@@ -34274,7 +34234,8 @@ var render = function() {
                                     },
                                     [
                                       _vm._v(
-                                        "Via " + _vm._s(flight.via.airport)
+                                        "Via " +
+                                          _vm._s(flight.via.airport.full_name)
                                       )
                                     ]
                                   ),
@@ -34380,7 +34341,7 @@ var render = function() {
                                   staticClass:
                                     "text-sm text-gray-700 font-medium"
                                 },
-                                [_vm._v(_vm._s(flight.to.airport))]
+                                [_vm._v(_vm._s(flight.to.airport.code_name))]
                               ),
                               _vm._v(" "),
                               _c(

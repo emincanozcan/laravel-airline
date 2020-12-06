@@ -48,7 +48,17 @@
         </form>
       </div>
       <div class="mt-8 mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md" v-if="flights">
-        <h2 class="font-semibold text-2xl border-b border-cool-gray-300 pb-2">Flight List</h2>
+        <div class="border-b border-cool-gray-300 pb-2 flex items-center justify-between">
+          <h2 class="font-semibold text-2xl">Flight List</h2>
+          <div class="flex items-center">
+            <label class="mr-4" for="flight-sort">Sort By</label>
+            <Select id="flight-sort" @change="sortBy">
+              <option disabled :selected="flightListSortBy === ''">Select To Sort</option>
+              <option value="price" :selected="flightListSortBy === 'price'">Price</option>
+              <option value="time" :selected="flightListSortBy === 'time'">Flight Time</option>
+            </Select>
+          </div>
+        </div>
         <div class="mt-4">
           <div class="flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList">
             <div class="flex items-center" style="flex: 2">
@@ -129,6 +139,7 @@ export default {
         dateFormat: 'Y-m-d',
       },
       flightList: [],
+      flightListSortBy: '',
     };
   },
   methods: {
@@ -175,7 +186,16 @@ export default {
         passengerCount: this.searchFlightsForm.passengerCount,
         arrivalAirport: this.searchFlightsForm.arrivalAirport,
       });
-      // this.$refs.createFlightForm.reset();
+    },
+    sortBy(event) {
+      const value = event.target.value;
+      this.flightList.sort(function (a, b) {
+        const p1 = parseFloat(a[value]);
+        const p2 = parseFloat(b[value]);
+        if (p1 > p2) return 1;
+        if (p2 > p1) return -1;
+        return 0;
+      });
     },
   },
 };

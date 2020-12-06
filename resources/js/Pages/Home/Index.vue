@@ -112,7 +112,7 @@ export default {
     this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
     this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
     this.searchFlightsForm.departureDate = params.has('departureDate') ? params.get('departureDate') : moment().add(1, 'days').format('Y-M-D');
-    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? params.get('passengerCount') : 1;
+    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? parseInt(params.get('passengerCount')) : 1;
     this.flights && this.organizeFlights();
   },
   data() {

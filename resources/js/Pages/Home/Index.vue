@@ -53,12 +53,12 @@
           <div class="flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList">
             <div class="flex items-center" style="flex: 2">
               <div class="flex flex-col justify-start items-start w-24">
-                <span class="text-sm text-gray-700 font-medium">{{ flight.from.airport }}</span>
+                <span class="text-sm text-gray-700 font-medium">{{ flight.from.airport.code_name }}</span>
                 <span class="text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.from.time }}</span>
               </div>
               <div class="mx-auto">
                 <div v-if="flight.via !== false">
-                  <p class="text-sm text-gray-500 text-center">Via {{ flight.via.airport }}</p>
+                  <p class="text-sm text-gray-500 text-center">Via {{ flight.via.airport.full_name }}</p>
                   <svg class="w-20 my-2 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" id="icon-arrow-way-stop">
                     <path
                       fill="#C8CACC"
@@ -81,7 +81,7 @@
                 </div>
               </div>
               <div class="flex flex-col justify-start items-start w-24">
-                <span class="text-sm text-gray-700 font-medium">{{ flight.to.airport }}</span>
+                <span class="text-sm text-gray-700 font-medium">{{ flight.to.airport.code_name }}</span>
                 <span class="text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.to.time }}</span>
               </div>
             </div>
@@ -109,27 +109,16 @@ export default {
   components: { Select, flatPickr, Button, FlightsTable },
   mounted() {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('departureAirport')) {
-      this.searchFlightsForm.departureAirport = params.get('departureAirport');
-    }
-    if (params.has('arrivalAirport')) {
-      this.searchFlightsForm.arrivalAirport = params.get('arrivalAirport');
-    }
-    if (params.has('departureDate')) {
-      this.searchFlightsForm.departureDate = params.get('departureDate');
-    }
-    if (params.has('passengerCount')) {
-      this.searchFlightsForm.passengerCount = parseInt(params.get('passengerCount'));
-    }
-    console.log(this.flights);
-    if (this.flights) {
-      this.organizeFlights();
-    }
+    this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
+    this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
+    this.searchFlightsForm.departureDate = params.has('departureDate') ? params.get('departureDate') : moment().add(1, 'days').format('Y-M-D');
+    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? params.get('passengerCount') : 1;
+    this.flights && this.organizeFlights();
   },
   data() {
     return {
       searchFlightsForm: {
-        departureDate: moment().add(1, 'days').format('Y-M-D'),
+        departureDate: null,
         departureAirport: '',
         arrivalAirport: '',
         passengerCount: 1,
@@ -143,30 +132,17 @@ export default {
     };
   },
   methods: {
-    getRouteForConnectedFlight(connectedFlights) {
-      let routeQueue = [];
-      const data = Object.values(connectedFlights);
-      data.forEach((flight, key) => {
-        routeQueue.push(flight.departure_airport.full_name);
-        if (!data[key + 1]) {
-          routeQueue.push(flight.arrival_airport.full_name);
-        }
-      });
-      let str = '';
-      routeQueue.forEach((item, key) => (str += item + (routeQueue[key + 1] ? ' -> ' : '')));
-      return str;
-    },
     organizeFlights() {
       let flightListData = [];
       this.flights.direct.forEach((flight) =>
         flightListData.push({
           from: {
             time: moment(flight['departure_time']).format('HH:mm'),
-            airport: flight['departure_airport']['code_name'],
+            airport: flight['departure_airport'],
           },
           to: {
             time: moment(flight['arrival_time']).format('HH:mm'),
-            airport: flight['arrival_airport']['code_name'],
+            airport: flight['arrival_airport'],
           },
           via: false,
           price: flight.price.toFixed(2),
@@ -177,14 +153,14 @@ export default {
         flightListData.push({
           from: {
             time: moment(connectedFlight.flights[0]['departure_time']).format('HH:mm'),
-            airport: connectedFlight.flights[0]['departure_airport']['code_name'],
+            airport: connectedFlight.flights[0]['departure_airport'],
           },
           to: {
             time: moment(connectedFlight.flights[1]['arrival_time']).format('HH:mm'),
-            airport: connectedFlight.flights[1]['arrival_airport']['code_name'],
+            airport: connectedFlight.flights[1]['arrival_airport'],
           },
           via: {
-            airport: connectedFlight.flights[0]['arrival_airport']['full_name'],
+            airport: connectedFlight.flights[0]['arrival_airport'],
           },
           price: connectedFlight.price.toFixed(2),
           time: connectedFlight.time,

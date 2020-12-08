@@ -5619,97 +5619,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -5984,6 +5893,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flatpickr_dist_themes_airbnb_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! flatpickr/dist/themes/airbnb.css */ "./node_modules/flatpickr/dist/themes/airbnb.css");
 /* harmony import */ var flatpickr_dist_themes_airbnb_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(flatpickr_dist_themes_airbnb_css__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _Components_FlightsTable_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/Components/FlightsTable.vue */ "./resources/js/Components/FlightsTable.vue");
+/* harmony import */ var _Jetstream_ApplicationMark_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @/Jetstream/ApplicationMark.vue */ "./resources/js/Jetstream/ApplicationMark.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -6087,6 +5997,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -6100,15 +6028,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     Select: _Components_Select__WEBPACK_IMPORTED_MODULE_1__["default"],
     flatPickr: vue_flatpickr_component__WEBPACK_IMPORTED_MODULE_3___default.a,
     Button: _Jetstream_Button__WEBPACK_IMPORTED_MODULE_2__["default"],
-    FlightsTable: _Components_FlightsTable_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
+    FlightsTable: _Components_FlightsTable_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    ApplicationMark: _Jetstream_ApplicationMark_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
   },
   mounted: function mounted() {
     var params = new URLSearchParams(window.location.search);
     this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
     this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
     this.searchFlightsForm.departureDate = params.has('departureDate') ? params.get('departureDate') : moment().add(1, 'days').format('Y-M-D');
-    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? params.get('passengerCount') : 1;
-    this.flights && this.organizeFlights();
+    this.searchFlightsForm.passengerCount = params.has('passengerCount') ? parseInt(params.get('passengerCount')) : 1;
+    this.flights.length > 0 && this.organizeFlights();
   },
   data: function data() {
     return {
@@ -6123,42 +6052,42 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         minDate: moment().format('Y-M-D'),
         dateFormat: 'Y-m-d'
       },
-      flightList: []
+      flightList: [],
+      flightListSortBy: ''
     };
   },
   methods: {
     organizeFlights: function organizeFlights() {
       var flightListData = [];
-      this.flights.direct.forEach(function (flight) {
-        return flightListData.push({
-          from: {
-            time: moment(flight['departure_time']).format('HH:mm'),
-            airport: flight['departure_airport']
-          },
-          to: {
-            time: moment(flight['arrival_time']).format('HH:mm'),
-            airport: flight['arrival_airport']
-          },
-          via: false,
-          price: flight.price.toFixed(2),
-          time: flight.time
-        });
-      });
-      this.flights.connected.forEach(function (connectedFlight) {
+      this.flights.forEach(function (flight) {
+        var firstFlight = flight.flights[0];
+        var lastFlight = flight.flights[flight.flights.length - 1];
+        var via = [];
+
+        if (flight.flights.length > 2) {
+          for (var i = 0; i < flight.flights.length; i++) {
+            if (i !== 0) {
+              via.push({
+                airport: flight.flights[i]['departure_airport']
+              });
+            }
+          }
+        } else {
+          via = false;
+        }
+
         flightListData.push({
           from: {
-            time: moment(connectedFlight.flights[0]['departure_time']).format('HH:mm'),
-            airport: connectedFlight.flights[0]['departure_airport']
+            time: moment(firstFlight['departure_time']).format('HH:mm'),
+            airport: firstFlight['departure_airport']
           },
           to: {
-            time: moment(connectedFlight.flights[1]['arrival_time']).format('HH:mm'),
-            airport: connectedFlight.flights[1]['arrival_airport']
+            time: moment(lastFlight['arrival_time']).format('HH:mm'),
+            airport: lastFlight['arrival_airport']
           },
-          via: {
-            airport: connectedFlight.flights[0]['arrival_airport']
-          },
-          price: connectedFlight.price.toFixed(2),
-          time: connectedFlight.time
+          via: via,
+          price: flight.price.toFixed(2),
+          time: flight.time
         });
       });
       this.flightList = flightListData;
@@ -6186,6 +6115,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee);
       }))();
+    },
+    sortBy: function sortBy(event) {
+      var value = event.target.value;
+      this.flightList.sort(function (a, b) {
+        var p1 = parseFloat(a[value]);
+        var p2 = parseFloat(b[value]);
+        if (p1 > p2) return 1;
+        if (p2 > p1) return -1;
+        return 0;
+      });
     }
   }
 });
@@ -30513,26 +30452,15 @@ var render = function() {
   return _c(
     "svg",
     {
-      attrs: {
-        viewBox: "0 0 48 48",
-        fill: "none",
-        xmlns: "http://www.w3.org/2000/svg"
-      }
+      staticClass: "text-cool-gray-800",
+      attrs: { viewBox: "0 0 32 32", xmlns: "http://www.w3.org/2000/svg" }
     },
     [
       _c("path", {
         attrs: {
+          fill: "currentColor",
           d:
-            "M11.395 44.428C4.557 40.198 0 32.632 0 24 0 10.745 10.745 0 24 0a23.891 23.891 0 0113.997 4.502c-.2 17.907-11.097 33.245-26.602 39.926z",
-          fill: "#6875F5"
-        }
-      }),
-      _vm._v(" "),
-      _c("path", {
-        attrs: {
-          d:
-            "M14.134 45.885A23.914 23.914 0 0024 48c13.255 0 24-10.745 24-24 0-3.516-.756-6.856-2.115-9.866-4.659 15.143-16.608 27.092-31.75 31.751z",
-          fill: "#6875F5"
+            "M24 19.999l-5.713-5.713 13.713-10.286-4-4-17.141 6.858-5.397-5.397c-1.556-1.556-3.728-1.928-4.828-0.828s-0.727 3.273 0.828 4.828l5.396 5.396-6.858 17.143 4 4 10.287-13.715 5.713 5.713v7.999h4l2-6 6-2v-4l-7.999 0z"
         }
       })
     ]
@@ -32979,353 +32907,37 @@ var render = function() {
         _c("div", { staticClass: "max-w-7xl mx-auto sm:px-6 lg:px-8" }, [
           _c(
             "div",
-            { staticClass: "bg-white overflow-hidden shadow-xl sm:rounded-lg" },
+            { staticClass: "bg-white overflow-hidden shadow-md sm:rounded-lg" },
             [
               _c("div", [
                 _c(
                   "div",
                   {
                     staticClass:
-                      "p-6 sm:px-20 bg-white border-b border-gray-200"
+                      "px-6 py-12 sm:px-20 bg-white border-b border-gray-200"
                   },
                   [
-                    _c("div", { staticClass: "mt-8 text-2xl" }, [
-                      _vm._v("Welcome to your Jetstream application!")
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-6 text-gray-500" }, [
-                      _vm._v(
-                        "\n              Laravel Jetstream provides a beautiful, robust starting point for your next Laravel application. Laravel is designed to help you build your application using a development environment that is simple, powerful, and enjoyable.\n              We believe you should love expressing your creativity through programming, so we have spent time carefully crafting the Laravel ecosystem to be a breath of fresh air. We hope you love it.\n            "
-                      )
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2"
-                  },
-                  [
-                    _c("div", { staticClass: "p-6" }, [
-                      _c("div", { staticClass: "flex items-center" }, [
-                        _c(
-                          "svg",
-                          {
-                            staticClass: "w-8 h-8 text-gray-400",
-                            attrs: {
-                              fill: "none",
-                              stroke: "currentColor",
-                              "stroke-linecap": "round",
-                              "stroke-linejoin": "round",
-                              "stroke-width": "2",
-                              viewBox: "0 0 24 24"
-                            }
-                          },
-                          [
-                            _c("path", {
-                              attrs: {
-                                d:
-                                  "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                              }
-                            })
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "ml-4 text-lg text-gray-600 leading-7 font-semibold"
-                          },
-                          [
-                            _c(
-                              "a",
-                              { attrs: { href: "https://laravel.com/docs" } },
-                              [_vm._v("Documentation")]
-                            )
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "ml-12" }, [
-                        _c(
-                          "div",
-                          { staticClass: "mt-2 text-sm text-gray-500" },
-                          [
-                            _vm._v(
-                              "\n                  Laravel has wonderful documentation covering every aspect of the framework. Whether you're new to the framework or have previous experience, we recommend reading all of the documentation from beginning to end.\n                "
-                            )
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          { attrs: { href: "https://laravel.com/docs" } },
-                          [
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "mt-3 flex items-center text-sm font-semibold text-indigo-700"
-                              },
-                              [
-                                _c("div", [
-                                  _vm._v("Explore the documentation")
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "ml-1 text-indigo-500" },
-                                  [
-                                    _c(
-                                      "svg",
-                                      {
-                                        staticClass: "w-4 h-4",
-                                        attrs: {
-                                          viewBox: "0 0 20 20",
-                                          fill: "currentColor"
-                                        }
-                                      },
-                                      [
-                                        _c("path", {
-                                          attrs: {
-                                            "fill-rule": "evenodd",
-                                            d:
-                                              "M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z",
-                                            "clip-rule": "evenodd"
-                                          }
-                                        })
-                                      ]
-                                    )
-                                  ]
-                                )
-                              ]
-                            )
-                          ]
-                        )
-                      ])
+                    _c("div", { staticClass: "text-2xl" }, [
+                      _vm._v("Evolution Airline Managament Panel")
                     ]),
                     _vm._v(" "),
                     _c(
                       "div",
                       {
-                        staticClass:
-                          "p-6 border-t border-gray-200 md:border-t-0 md:border-l"
+                        staticClass: "mt-6 text-gray-500 text-lg font-semibold"
                       },
                       [
-                        _c("div", { staticClass: "flex items-center" }, [
-                          _c(
-                            "svg",
-                            {
-                              staticClass: "w-8 h-8 text-gray-400",
-                              attrs: {
-                                fill: "none",
-                                stroke: "currentColor",
-                                "stroke-linecap": "round",
-                                "stroke-linejoin": "round",
-                                "stroke-width": "2",
-                                viewBox: "0 0 24 24"
-                              }
-                            },
-                            [
-                              _c("path", {
-                                attrs: {
-                                  d:
-                                    "M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("path", {
-                                attrs: { d: "M15 13a3 3 0 11-6 0 3 3 0 016 0z" }
-                              })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "ml-4 text-lg text-gray-600 leading-7 font-semibold"
-                            },
-                            [
-                              _c(
-                                "a",
-                                { attrs: { href: "https://laracasts.com" } },
-                                [_vm._v("Laracasts")]
-                              )
-                            ]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "ml-12" }, [
-                          _c(
-                            "div",
-                            { staticClass: "mt-2 text-sm text-gray-500" },
-                            [
-                              _vm._v(
-                                "\n                  Laracasts offers thousands of video tutorials on Laravel, PHP, and JavaScript development. Check them out, see for yourself, and massively level up your development skills in the process.\n                "
-                              )
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            { attrs: { href: "https://laracasts.com" } },
-                            [
-                              _c(
-                                "div",
-                                {
-                                  staticClass:
-                                    "mt-3 flex items-center text-sm font-semibold text-indigo-700"
-                                },
-                                [
-                                  _c("div", [
-                                    _vm._v("Start watching Laracasts")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "ml-1 text-indigo-500" },
-                                    [
-                                      _c(
-                                        "svg",
-                                        {
-                                          staticClass: "w-4 h-4",
-                                          attrs: {
-                                            viewBox: "0 0 20 20",
-                                            fill: "currentColor"
-                                          }
-                                        },
-                                        [
-                                          _c("path", {
-                                            attrs: {
-                                              "fill-rule": "evenodd",
-                                              d:
-                                                "M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z",
-                                              "clip-rule": "evenodd"
-                                            }
-                                          })
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]
-                              )
-                            ]
-                          )
-                        ])
+                        _vm._v(
+                          "This dashboard is created to easily manage the app."
+                        )
                       ]
                     ),
                     _vm._v(" "),
-                    _c("div", { staticClass: "p-6 border-t border-gray-200" }, [
-                      _c("div", { staticClass: "flex items-center" }, [
-                        _c(
-                          "svg",
-                          {
-                            staticClass: "w-8 h-8 text-gray-400",
-                            attrs: {
-                              fill: "none",
-                              stroke: "currentColor",
-                              "stroke-linecap": "round",
-                              "stroke-linejoin": "round",
-                              "stroke-width": "2",
-                              viewBox: "0 0 24 24"
-                            }
-                          },
-                          [
-                            _c("path", {
-                              attrs: {
-                                d:
-                                  "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              }
-                            })
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "ml-4 text-lg text-gray-600 leading-7 font-semibold"
-                          },
-                          [
-                            _c(
-                              "a",
-                              { attrs: { href: "https://tailwindcss.com/" } },
-                              [_vm._v("Tailwind")]
-                            )
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "ml-12" }, [
-                        _c(
-                          "div",
-                          { staticClass: "mt-2 text-sm text-gray-500" },
-                          [
-                            _vm._v(
-                              "\n                  Laravel Jetstream is built with Tailwind, an amazing utility first CSS framework that doesn't get in your way. You'll be amazed how easily you can build and maintain fresh, modern designs with this wonderful framework at\n                  your fingertips.\n                "
-                            )
-                          ]
-                        )
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass: "p-6 border-t border-gray-200 md:border-l"
-                      },
-                      [
-                        _c("div", { staticClass: "flex items-center" }, [
-                          _c(
-                            "svg",
-                            {
-                              staticClass: "w-8 h-8 text-gray-400",
-                              attrs: {
-                                fill: "none",
-                                stroke: "currentColor",
-                                "stroke-linecap": "round",
-                                "stroke-linejoin": "round",
-                                "stroke-width": "2",
-                                viewBox: "0 0 24 24"
-                              }
-                            },
-                            [
-                              _c("path", {
-                                attrs: {
-                                  d:
-                                    "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                }
-                              })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "ml-4 text-lg text-gray-600 leading-7 font-semibold"
-                            },
-                            [_vm._v("Authentication")]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "ml-12" }, [
-                          _c(
-                            "div",
-                            { staticClass: "mt-2 text-sm text-gray-500" },
-                            [
-                              _vm._v(
-                                "\n                  Authentication and registration views are included with Laravel Jetstream, as well as support for user email verification and resetting forgotten passwords. So, you're free to get started what matters most: building your\n                  application.\n                "
-                              )
-                            ]
-                          )
-                        ])
-                      ]
-                    )
+                    _c("div", { staticClass: "mt-6 text-red-600" }, [
+                      _vm._v(
+                        "\n              @todo - Management panel usage instructions will be located here in the future.\n            "
+                      )
+                    ])
                   ]
                 )
               ])
@@ -33908,7 +33520,24 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "bg-gray-100 min-h-screen" }, [
-    _vm._m(0),
+    _c("header", { staticClass: "w-full py-6 bg-white px-8 shadow-md" }, [
+      _c(
+        "div",
+        { staticClass: "max-w-6xl w-full mx-auto flex" },
+        [
+          _c("application-mark", {
+            staticClass: "block h-9 w-auto mr-8 text-gray-100"
+          }),
+          _vm._v(" "),
+          _c(
+            "h1",
+            { staticClass: "font-semibold text-2xl text-cool-gray-800" },
+            [_vm._v("Evolution Airline")]
+          )
+        ],
+        1
+      )
+    ]),
     _vm._v(" "),
     _c("main", { staticClass: "mt-8 px-8" }, [
       _c(
@@ -34169,12 +33798,71 @@ var render = function() {
             },
             [
               _c(
-                "h2",
+                "div",
                 {
                   staticClass:
-                    "font-semibold text-2xl border-b border-cool-gray-300 pb-2"
+                    "border-b border-cool-gray-200 pb-2 flex items-center justify-between"
                 },
-                [_vm._v("Flight List")]
+                [
+                  _c("h2", { staticClass: "font-semibold text-2xl" }, [
+                    _vm._v("Flight List")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "flex items-center" },
+                    [
+                      _c(
+                        "label",
+                        { staticClass: "mr-4", attrs: { for: "flight-sort" } },
+                        [_vm._v("Sort By")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "Select",
+                        {
+                          attrs: { id: "flight-sort" },
+                          on: { change: _vm.sortBy }
+                        },
+                        [
+                          _c(
+                            "option",
+                            {
+                              attrs: { disabled: "" },
+                              domProps: {
+                                selected: _vm.flightListSortBy === ""
+                              }
+                            },
+                            [_vm._v("Select To Sort")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "option",
+                            {
+                              attrs: { value: "price" },
+                              domProps: {
+                                selected: _vm.flightListSortBy === "price"
+                              }
+                            },
+                            [_vm._v("Price")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "option",
+                            {
+                              attrs: { value: "time" },
+                              domProps: {
+                                selected: _vm.flightListSortBy === "time"
+                              }
+                            },
+                            [_vm._v("Flight Time")]
+                          )
+                        ]
+                      )
+                    ],
+                    1
+                  )
+                ]
               ),
               _vm._v(" "),
               _c(
@@ -34233,11 +33921,23 @@ var render = function() {
                                         "text-sm text-gray-500 text-center"
                                     },
                                     [
-                                      _vm._v(
-                                        "Via " +
-                                          _vm._s(flight.via.airport.full_name)
-                                      )
-                                    ]
+                                      _vm._v("\n                  Via"),
+                                      _c("br"),
+                                      _vm._v(" "),
+                                      _vm._l(flight.via, function(v, key) {
+                                        return _c("span", { key: key }, [
+                                          _vm._v(
+                                            "\n                    " +
+                                              _vm._s(v.airport.full_name) +
+                                              "\n                    "
+                                          ),
+                                          key < flight.via.length - 1
+                                            ? _c("span", [_vm._v(" -> ")])
+                                            : _vm._e()
+                                        ])
+                                      })
+                                    ],
+                                    2
                                   ),
                                   _vm._v(" "),
                                   _c(
@@ -34379,20 +34079,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("header", { staticClass: "w-full py-6 bg-blue-700 px-8" }, [
-      _c("div", { staticClass: "max-w-6xl w-full mx-auto" }, [
-        _c("h1", { staticClass: "font-semibold text-3xl text-white" }, [
-          _vm._v("Evolution Airline")
-        ])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

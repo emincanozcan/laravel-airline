@@ -1,8 +1,9 @@
 <template>
   <div class="bg-gray-100 min-h-screen">
-    <header class="w-full py-6 bg-blue-700 px-8">
-      <div class="max-w-6xl w-full mx-auto">
-        <h1 class="font-semibold text-3xl text-white">Evolution Airline</h1>
+    <header class="w-full py-6 bg-white px-8 shadow-md">
+      <div class="max-w-6xl w-full mx-auto flex">
+        <application-mark class="block h-9 w-auto mr-8 text-gray-100" />
+        <h1 class="font-semibold text-2xl text-cool-gray-800">Evolution Airline</h1>
       </div>
     </header>
 
@@ -48,7 +49,7 @@
         </form>
       </div>
       <div class="mt-8 mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md" v-if="flights">
-        <div class="border-b border-cool-gray-300 pb-2 flex items-center justify-between">
+        <div class="border-b border-cool-gray-200 pb-2 flex items-center justify-between">
           <h2 class="font-semibold text-2xl">Flight List</h2>
           <div class="flex items-center">
             <label class="mr-4" for="flight-sort">Sort By</label>
@@ -68,7 +69,13 @@
               </div>
               <div class="mx-auto">
                 <div v-if="flight.via !== false">
-                  <p class="text-sm text-gray-500 text-center">Via {{ flight.via.airport.full_name }}</p>
+                  <p class="text-sm text-gray-500 text-center">
+                    Via<br>
+                    <span v-for="(v, key) in flight.via" :key="key">
+                      {{ v.airport.full_name }}
+                      <span v-if="key < flight.via.length - 1"> -> </span>
+                    </span>
+                  </p>
                   <svg class="w-20 my-2 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" id="icon-arrow-way-stop">
                     <path
                       fill="#C8CACC"
@@ -112,18 +119,19 @@ import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/airbnb.css';
 import FlightsTable from '@/Components/FlightsTable.vue';
+import ApplicationMark from '@/Jetstream/ApplicationMark.vue';
 
 export default {
   name: 'Home',
   props: ['airports', 'flights'],
-  components: { Select, flatPickr, Button, FlightsTable },
+  components: { Select, flatPickr, Button, FlightsTable, ApplicationMark },
   mounted() {
     const params = new URLSearchParams(window.location.search);
     this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
     this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
     this.searchFlightsForm.departureDate = params.has('departureDate') ? params.get('departureDate') : moment().add(1, 'days').format('Y-M-D');
     this.searchFlightsForm.passengerCount = params.has('passengerCount') ? parseInt(params.get('passengerCount')) : 1;
-    this.flights && this.organizeFlights();
+    this.flights.length > 0 && this.organizeFlights();
   },
   data() {
     return {
@@ -145,36 +153,31 @@ export default {
   methods: {
     organizeFlights() {
       let flightListData = [];
-      this.flights.direct.forEach((flight) =>
+      this.flights.forEach((flight) => {
+        const firstFlight = flight.flights[0];
+        const lastFlight = flight.flights[flight.flights.length - 1];
+        let via = [];
+        if (flight.flights.length > 2) {
+          for (let i = 0; i < flight.flights.length; i++) {
+            if (i !== 0) {
+              via.push({ airport: flight.flights[i]['departure_airport'] });
+            }
+          }
+        } else {
+          via = false;
+        }
         flightListData.push({
           from: {
-            time: moment(flight['departure_time']).format('HH:mm'),
-            airport: flight['departure_airport'],
+            time: moment(firstFlight['departure_time']).format('HH:mm'),
+            airport: firstFlight['departure_airport'],
           },
           to: {
-            time: moment(flight['arrival_time']).format('HH:mm'),
-            airport: flight['arrival_airport'],
+            time: moment(lastFlight['arrival_time']).format('HH:mm'),
+            airport: lastFlight['arrival_airport'],
           },
-          via: false,
+          via: via,
           price: flight.price.toFixed(2),
           time: flight.time,
-        })
-      );
-      this.flights.connected.forEach((connectedFlight) => {
-        flightListData.push({
-          from: {
-            time: moment(connectedFlight.flights[0]['departure_time']).format('HH:mm'),
-            airport: connectedFlight.flights[0]['departure_airport'],
-          },
-          to: {
-            time: moment(connectedFlight.flights[1]['arrival_time']).format('HH:mm'),
-            airport: connectedFlight.flights[1]['arrival_airport'],
-          },
-          via: {
-            airport: connectedFlight.flights[0]['arrival_airport'],
-          },
-          price: connectedFlight.price.toFixed(2),
-          time: connectedFlight.time,
         });
       });
       this.flightList = flightListData;

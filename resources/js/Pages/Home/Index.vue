@@ -3,7 +3,7 @@
     <header class="w-full py-6 bg-white px-8 shadow-md">
       <div class="max-w-6xl w-full mx-auto flex">
         <application-mark class="block h-9 w-auto mr-8 text-gray-100" />
-        <h1 class="font-semibold text-2xl text-cool-gray-800">Evolution Airline</h1>
+        <h1 class="font-semibold text-2xl text-cool-gray-800">Nameless Airlines</h1>
       </div>
     </header>
 
@@ -157,7 +157,7 @@ export default {
         const firstFlight = flight.flights[0];
         const lastFlight = flight.flights[flight.flights.length - 1];
         let via = [];
-        if (flight.flights.length > 2) {
+        if (flight.flights.length >= 2) {
           for (let i = 0; i < flight.flights.length; i++) {
             if (i !== 0) {
               via.push({ airport: flight.flights[i]['departure_airport'] });

@@ -6064,7 +6064,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var lastFlight = flight.flights[flight.flights.length - 1];
         var via = [];
 
-        if (flight.flights.length > 2) {
+        if (flight.flights.length >= 2) {
           for (var i = 0; i < flight.flights.length; i++) {
             if (i !== 0) {
               via.push({
@@ -33532,7 +33532,7 @@ var render = function() {
           _c(
             "h1",
             { staticClass: "font-semibold text-2xl text-cool-gray-800" },
-            [_vm._v("Evolution Airline")]
+            [_vm._v("Nameless Airlines")]
           )
         ],
         1

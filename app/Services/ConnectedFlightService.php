@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\Flight;
 use App\Models\Airport;
 use Illuminate\Support\Carbon;
@@ -63,7 +64,9 @@ class ConnectedFlightService
     $this->visited[$from] = true;
     array_push($this->path, ['airport' => $from, 'flight' => $flightId !== null ? $this->flightList[$flightId] : null]);
     if ($from == $to) {
-      array_push($this->result, $this->path);
+      if (count($this->path) > 1) {
+        array_push($this->result, $this->path);
+      }
     } else if (count($this->path) < $this->maxDepth) {
       foreach ($this->graph[$from] as $i) {
         if ($this->visited[$i['to']] == false) {

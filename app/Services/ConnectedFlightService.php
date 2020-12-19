@@ -29,6 +29,7 @@ class ConnectedFlightService
       ->where("departure_time", ">", Carbon::now()->toDateTimeString())
       ->where("departure_time", "<", $endDate)
       ->where("arrival_time", "<", $a)
+      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
       ->with(['departureAirport', 'arrivalAirport'])
       ->get();
 

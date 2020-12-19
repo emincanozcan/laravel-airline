@@ -107,7 +107,7 @@
           </div>
         </div>
       </div>
-      <purchase v-if="purchase.show" :show="purchase.show" :flightIds="purchase.flightIds" @close="purchase.show = false" />
+      <purchase v-if="purchase.show" :show="purchase.show" :flightIds="purchase.flightIds" :passengerCount="searchFlightsForm.passengerCount" @close="purchase.show = false" />
       <portal-target name="modal" multiple> </portal-target>
     </main>
   </div>
@@ -127,9 +127,9 @@ export default {
   props: ['airports', 'flights'],
   components: { Select, flatPickr, Button, FlightsTable, ApplicationMark, Purchase },
   mounted() {
-    if(!document.querySelector('script[src="https://js.stripe.com/v3/"]')){
+    if (!document.querySelector('script[src="https://js.stripe.com/v3/"]')) {
       const script = document.createElement('script');
-      script.src = "https://js.stripe.com/v3/";
+      script.src = 'https://js.stripe.com/v3/';
       document.body.appendChild(script);
     }
     const params = new URLSearchParams(window.location.search);

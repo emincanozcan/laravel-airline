@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Flight;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Notifications\NotifyPurchaserOnPurchase;
+use Illuminate\Support\Facades\Notification;
 
 class SaleController extends Controller
 {
@@ -35,20 +37,34 @@ class SaleController extends Controller
     }
     public function purchase()
     {
-        /* #todo send email  */
         $paymentMethod = request()->get('paymentMethod');
-        $name = request()->get('name');
-        $email = request()->get('email');
-        $flightIds = request()->get('flightIds');
-        $flights =  Flight::findMany($flightIds);
+        $validatedData = request()->validate([
+            "name" => "required|string|min:2|max:50",
+            'email' => "required|email",
+            "passengerCount" => "required|numeric",
+            'flightIds' => "required",
+            "flightIds.*" => "required|numeric",
+        ]);
+        $name = $validatedData['name'];
+        $passengerCount = $validatedData['passengerCount'];
+        $email = $validatedData['email'];
+        $flightIds = $validatedData['flightIds'];
+        $implodedFlightIds = implode("','", $flightIds);
 
-        $totalPrice = $flights->reduce(fn ($carry, $item) => $carry + $item->price) * 100;
+        $flights = Flight::with(['departureAirport', 'arrivalAirport'])
+            ->whereIn('id', $flightIds)
+            ->orderByRaw(DB::raw("FIELD(id, '$implodedFlightIds')"))
+            ->get();
+
+        $totalPrice = $flights->reduce(fn ($carry, $item) => $carry + $item->price) * 100 * $passengerCount;
 
         try {
-            $stripeCharge = (new User)->charge($totalPrice, $paymentMethod['id']);
+            (new User)->charge($totalPrice, $paymentMethod['id']);
         } catch (Exception $e) {
-            return $e;
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
-        return response()->json(['charge' => $stripeCharge]);
+        Flight::whereIn('id', $flightIds)->increment('sold_count', $passengerCount);
+        Notification::route('mail', $email)->notify(new NotifyPurchaserOnPurchase(['name' => $name, 'email' => $email, 'flights' => $flights, 'passengerCount' => $passengerCount]));
+        return response()->json(['status' => 'ok', 'message' => "success"]);
     }
 }

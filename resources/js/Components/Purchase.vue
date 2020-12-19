@@ -34,7 +34,13 @@
             </tr>
 
             <tr class="border-dashed border border-cool-gray-300">
-              <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">Price</td>
+              <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">Passenger Count</td>
+              <td class="px-4 py-2 flex justify-between items-center">
+                <span class="font-medium text-cool-gray-800"> {{ passengerCount }} </span>
+              </td>
+            </tr>
+            <tr class="border-dashed border border-cool-gray-300">
+              <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">Total Price</td>
               <td class="px-4 py-2 flex justify-between items-center">
                 <span class="font-medium text-cool-gray-800"> ${{ flightData.totalPrice }} </span>
               </td>
@@ -90,7 +96,7 @@ export default {
     };
   },
   components: { DialogModal, Button },
-  props: ['show', 'flightIds'],
+  props: ['show', 'flightIds', 'passengerCount'],
   methods: {
     initialize() {
       const stripeKey = this.$page.stripePublicKey;
@@ -104,16 +110,22 @@ export default {
         billing_details: { name: this.cardName, email: this.cardEmail },
       });
       if (error) {
-        alert('error');
+        this.$swal('Error', error.message, 'error');
       } else {
-        axios.post(route('sale.purchase').url(), {
+        const response = await axios.post(route('sale.purchase').url(), {
           paymentMethod: paymentMethod,
           name: this.cardName,
           email: this.cardEmail,
+          passengerCount: this.passengerCount,
           flightIds: this.flightIds,
-        }).then(function(response){
-          console.log(response.data);
-        })
+        });
+        if (response.data.status && response.data.status === 'ok') {
+          await this.$swal('Success', 'We are sending an email to you about your ticket details.', 'success');
+        } else {
+          /* this is not acceptable error handling, it needs improve,emts but this is just a demo... */
+          await this.$swal('Error', response.data.message ? response.data.message : 'An error happened. Please try again or contact us.', 'error');
+        }
+        window.location.reload();
       }
     },
   },

@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Services;
 
+use Exception;
+use App\Models\Flight;
 use App\Models\Airport;
+use Illuminate\Support\Carbon;
 
-class ConnectedFlightDFS
+class FlightSearchService
 {
   protected $nodeIdList;
   protected $timeList;
@@ -13,15 +16,27 @@ class ConnectedFlightDFS
   protected array $graph;
   protected $visited, $path;
   protected $result = [];
-  public function __construct($flightList)
+  protected $passengerCount;
+
+
+  public function __construct($fromDate, $endDate, $passengerCount)
   {
-    $this->flightList = [];
+    $this->passengerCount = $passengerCount;
+
+    $maxArrivalTime = Carbon::parse($fromDate)->setHour(0)->setMinutes(0)->setSeconds(0)->addHours(48);
+    $flightList = Flight::where("departure_time", ">", $fromDate)
+      ->where("departure_time", ">", Carbon::now()->toDateTimeString())
+      ->where("departure_time", "<", $endDate)
+      ->where("arrival_time", "<", $maxArrivalTime)
+      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
+      ->with(['departureAirport', 'arrivalAirport'])
+      ->get();
+
     foreach ($flightList as $flight) {
       $this->flightList[$flight->id] = $flight;
     }
 
     $this->nodeIdList = Airport::all()->map(fn ($a) => $a->id);
-
     foreach ($flightList as $flight) {
       $this->timeList[$flight->id] = [
         "departure" => $flight->departure_time,
@@ -49,7 +64,9 @@ class ConnectedFlightDFS
     $this->visited[$from] = true;
     array_push($this->path, ['airport' => $from, 'flight' => $flightId !== null ? $this->flightList[$flightId] : null]);
     if ($from == $to) {
-      array_push($this->result, $this->path);
+      if (count($this->path) > 1) {
+        array_push($this->result, $this->path);
+      }
     } else if (count($this->path) < $this->maxDepth) {
       foreach ($this->graph[$from] as $i) {
         if ($this->visited[$i['to']] == false) {
@@ -69,18 +86,40 @@ class ConnectedFlightDFS
     $this->path = [];
     $this->getAllPathsRecursively($from, $to);
 
-    $finalPaths = [];
+    $tmp = [];
     foreach ($this->result as $flights) {
       $flag = true;
       for ($i = 1; $i < count($flights) - 1; $i++) {
-        if ($flights[$i]['flight']->arrival_time > $flights[$i + 1]['flight']->departure_time) {
+
+        if (
+          $flights[$i]['flight']->arrival_time > $flights[$i + 1]['flight']->departure_time ||
+          Carbon::parse($flights[$i]['flight']->arrival_time)->diffInMinutes(Carbon::parse($flights[$i + 1]['flight']->departure_time)) < 60
+        ) {
           $flag = false;
         }
       }
       if ($flag) {
-        array_push($finalPaths, $flights);
+        array_push($tmp, $flights);
       }
     }
-    return $finalPaths;
+    $connectedFlights = [];
+    foreach ($tmp as $k) {
+      $flights = [];
+      $price = 0;
+      $flightTime = Carbon::parse($k[count($k) - 1]['flight']->arrival_time)->diffInMinutes(Carbon::parse($k[1]['flight']->departure_time));
+      foreach ($k as $j) {
+        if (isset($j['flight'])) {
+          $flights[] = $j['flight'];
+          $price += $j['flight']->price;
+        }
+      }
+      $price *= $this->passengerCount;
+      array_push($connectedFlights, [
+        'price' => $price,
+        'time' => $flightTime,
+        'flights' => $flights
+      ]);
+    }
+    return $connectedFlights;
   }
 }

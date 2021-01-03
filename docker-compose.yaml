@@ -2,12 +2,6 @@ version: "3"
 
 services:
   php:
-    # PROD
-    # image: demophp:latest
-    # volumes:
-    #   - ./.env:/var/www/html/.env
-
-    # DEV
     build:
       context: .
     volumes:
@@ -16,11 +10,6 @@ services:
   web:
     ports:
       - "80:80"
-
-    # PROD
-    # image: demonginx:latest
-
-    # DEV
     image: nginx:1.17
     working_dir: /var/www/html
     volumes:

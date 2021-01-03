@@ -23,18 +23,12 @@ class ConnectedFlightService
   {
     $this->passengerCount = $passengerCount;
 
-    $this->flightList = [];
     $maxArrivalTime = Carbon::parse($fromDate)->setHour(0)->setMinutes(0)->setSeconds(0)->addHours(48);
     $flightList = Flight::where("departure_time", ">", $fromDate)
       ->where("departure_time", ">", Carbon::now()->toDateTimeString())
       ->where("departure_time", "<", $endDate)
-<<<<<<< Updated upstream
-      ->where("arrival_time", "<", $a)
-      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
-=======
       ->where("arrival_time", "<", $maxArrivalTime)
-      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount]) 
->>>>>>> Stashed changes
+      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
       ->with(['departureAirport', 'arrivalAirport'])
       ->get();
 

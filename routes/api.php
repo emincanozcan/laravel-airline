@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-<<<<<<< Updated upstream
-=======
 Route::post('sale/information', [SaleController::class, "getPurchaseInformationByFlightIds"])->name('sale.information');
 
 Route::post('sale/purchase', [SaleController::class, "purchase"])
     ->name('sale.purchase');
->>>>>>> Stashed changes

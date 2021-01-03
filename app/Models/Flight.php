@@ -36,21 +36,4 @@ class Flight extends Model
         return $query->where('departure_time', '<', Carbon::now()->toDateTimeString())
             ->where('arrival_time', '>', Carbon::now()->toDateTimeString());
     }
-    public function scopeDirect($query, $from, $to, $fromMinDate, $fromMaxDate, $passengerCount)
-    {
-        return $query->where("departure_time", "<", $fromMaxDate)
-            ->where("departure_time", ">", $fromMinDate)
-            ->where("departure_time", ">", Carbon::now()->toDateTimeString())
-            ->where('departure_airport', $from)
-            ->where('arrival_airport', $to)
-            ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount]);
-    }
-    public function scopeFrom($query, $from, $fromMinDate, $fromMaxDate, $passengerCount)
-    {
-        return $query->where("departure_time", "<", $fromMaxDate)
-            ->where("departure_time", ">", $fromMinDate)
-            ->where("departure_time", ">", Carbon::now()->toDateTimeString())
-            ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
-            ->where('departure_airport', $from);
-    }
 }

@@ -1,61 +1,41 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Airline Company Ticket Sale System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Purpose Of Project - What is it for? 
+I created this application as a school project at Yildiz Technical University / Mathematical Engineering.
 
-## About Laravel
+The topic of school project is developing web application with Laravel and deploying via Laravel Vapor. This repo contains project files / vapor config is ignored.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Airline company ticket sale system selected as demo application topic and some features coded.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## What does the project include?
+* Administrator can create flights between airports with some informations which are departure and arrival airports, departure and arrival times, ticket price and flight capacity.
+* Administrator can list flights with some filters.
+* Visitors can search flights via selecting airports, passenger count and departure date.
+* Flight listing function includes direct flights and connected (indirect) flights. To find connected flights, the Flight Search service is developed & it can be found App/Services/FlightSearchService.php 
+* Stripe is integrated to system to selling tickets to visitors with credit cards.
+* When visitors purchase a ticket, they receive an email with ticket details.
+## Technologies used in application
+* Laravel
+* Jetstream
+* Inertia Js
+* Tailwind CSS
+* Stripe
+## How to run application locally?
+This project contains Docker configuration for development purposes. It can be run via Docker Compose or other solutions like homestead, valet etc.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+To run with docker;
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Clone the project: `git clone https://github.com/emincanozcan/laravel-airline.git`
+2. Go to project root directory: `cd "ProjectDirectory"` 
+3. Open `database/seeders/DatabaseSeeder.php` file and change user e-mail and password, these are administrator login credentials.
+4. Copy .env.dev to .env: `cp ./.env.dev ./.env`
+5. Create a Stripe & Mailgun account and fill the values in .env file
+6. Run `docker-compose up --build -d`
+7. Run `docker-compose exec php bash` to get in php container
+8. Run these commands in the php container;
+   1. `composer install`
+   2. `php artisan key:generate`
+   3. `php artisan migrate --seed`
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.

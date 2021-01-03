@@ -6,7 +6,6 @@
         <h1 class="font-semibold text-2xl text-cool-gray-800">Nameless Airlines</h1>
       </div>
     </header>
-
     <main class="mt-8 px-8">
       <div class="mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md">
         <h2 class="font-semibold text-2xl border-b border-cool-gray-300 pb-2">Search Flights</h2>
@@ -61,7 +60,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <div class="flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList">
+          <div class="flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList" @click="() => openPurchase(flight)">
             <div class="flex items-center" style="flex: 2">
               <div class="flex flex-col justify-start items-start w-24">
                 <span class="text-sm text-gray-700 font-medium">{{ flight.from.airport.code_name }}</span>
@@ -70,7 +69,7 @@
               <div class="mx-auto">
                 <div v-if="flight.via !== false">
                   <p class="text-sm text-gray-500 text-center">
-                    Via<br>
+                    Via<br />
                     <span v-for="(v, key) in flight.via" :key="key">
                       {{ v.airport.full_name }}
                       <span v-if="key < flight.via.length - 1"> -> </span>
@@ -108,6 +107,8 @@
           </div>
         </div>
       </div>
+      <purchase v-if="purchase.show" :show="purchase.show" :flightIds="purchase.flightIds" :passengerCount="searchFlightsForm.passengerCount" @close="purchase.show = false" />
+      <portal-target name="modal" multiple> </portal-target>
     </main>
   </div>
 </template>
@@ -120,12 +121,17 @@ import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/airbnb.css';
 import FlightsTable from '@/Components/FlightsTable.vue';
 import ApplicationMark from '@/Jetstream/ApplicationMark.vue';
-
+import Purchase from '@/Components/Purchase.vue';
 export default {
   name: 'Home',
   props: ['airports', 'flights'],
-  components: { Select, flatPickr, Button, FlightsTable, ApplicationMark },
+  components: { Select, flatPickr, Button, FlightsTable, ApplicationMark, Purchase },
   mounted() {
+    if (!document.querySelector('script[src="https://js.stripe.com/v3/"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://js.stripe.com/v3/';
+      document.body.appendChild(script);
+    }
     const params = new URLSearchParams(window.location.search);
     this.searchFlightsForm.departureAirport = params.has('departureAirport') ? params.get('departureAirport') : '';
     this.searchFlightsForm.arrivalAirport = params.has('arrivalAirport') ? params.get('arrivalAirport') : '';
@@ -135,6 +141,10 @@ export default {
   },
   data() {
     return {
+      purchase: {
+        show: false,
+        flightIds: [],
+      },
       searchFlightsForm: {
         departureDate: null,
         departureAirport: '',
@@ -151,22 +161,28 @@ export default {
     };
   },
   methods: {
+    openPurchase(flight) {
+      this.purchase.flightIds = flight.flightIdsList;
+      this.purchase.show = true;
+    },
     organizeFlights() {
       let flightListData = [];
       this.flights.forEach((flight) => {
+        let flightIdsList = [];
         const firstFlight = flight.flights[0];
         const lastFlight = flight.flights[flight.flights.length - 1];
+        flightIdsList.push(firstFlight.id);
         let via = [];
         if (flight.flights.length >= 2) {
-          for (let i = 0; i < flight.flights.length; i++) {
-            if (i !== 0) {
-              via.push({ airport: flight.flights[i]['departure_airport'] });
-            }
+          for (let i = 1; i < flight.flights.length; i++) {
+            flightIdsList.push(flight.flights[i].id);
+            via.push({ airport: flight.flights[i]['departure_airport'] });
           }
         } else {
           via = false;
         }
         flightListData.push({
+          flightIdsList,
           from: {
             time: moment(firstFlight['departure_time']).format('HH:mm'),
             airport: firstFlight['departure_airport'],

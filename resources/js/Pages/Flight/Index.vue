@@ -11,10 +11,10 @@
             <h1 class="text-3xl">Flight List</h1>
           </div>
           <div>
-            <flights-filters class="px-8 mb-4" :airports="airports" />
+            <flights-filters class="mx-4 lg:mx-8 mb-4" :airports="airports" />
           </div>
 
-          <div class="mx-8 mb-6">
+          <div class="mx-4 lg:mx-8 mb-6">
             <flights-table :flights="flights" />
             <div>
               <flights-pagination :total="flights.total" :currentPage="flights.current_page" :lastPage="flights.last_page" :perPage="flights.per_page" />

@@ -1,22 +1,22 @@
 <template>
   <div class="bg-gray-100 min-h-screen">
-    <header class="w-full py-6 bg-white px-8 shadow-md">
+    <header class="w-full py-6 bg-white px-4 md:px-8 shadow-md">
       <div class="max-w-6xl w-full mx-auto flex">
         <application-mark class="block h-9 w-auto mr-8 text-gray-100" />
         <h1 class="font-semibold text-2xl text-cool-gray-800">Nameless Airlines</h1>
       </div>
     </header>
-    <main class="mt-8 px-8">
-      <div class="mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md">
+    <main class="mt-8 px-4 md:px-8">
+      <div class="mx-auto max-w-6xl w-full bg-white p-4 lg:p-8 shadow-md">
         <h2 class="font-semibold text-2xl border-b border-cool-gray-300 pb-2">Search Flights</h2>
         <form @submit.prevent="searchFlights">
-          <div class="flex mt-8 justify-between">
-            <div class="flex flex-1 items-center mr-12">
-              <label for="departure-date" class="mr-4">Date:</label>
+          <div class="flex mt-8 justify-between flex-col lg:flex-row">
+            <div class="block md:flex flex-1 items-center mb-4 lg:mb-0 lg:mr-4 xl:mr-12">
+              <label for="departure-date" class="mr-4 w-32 lg:w-auto">Date:</label>
               <flat-pickr class="border w-full border-gray-200 py-2 px-4 bg-gray-100 rounded-md" id="departure-date" v-model="searchFlightsForm.departureDate" :config="flatPickrConfig"></flat-pickr>
             </div>
-            <div class="flex flex-1 items-center mr-12">
-              <label for="from" class="mr-4"> From: </label>
+            <div class="block md:flex flex-1 items-center mb-4 lg:mb-0 lg:mr-4 xl:mr-12">
+              <label for="from" class="mr-4 w-32 lg:w-auto"> From: </label>
               <Select class="w-full" id="from" name="from" @change="(event) => (searchFlightsForm.departureAirport = event.target.value)">
                 <option value="" disabled :selected="searchFlightsForm.departureAirport == ''">Departure Airport</option>
                 <option :key="airport.id" :selected="airport.id == searchFlightsForm.departureAirport" :value="airport.id" v-for="airport in airports">
@@ -24,8 +24,8 @@
                 </option>
               </Select>
             </div>
-            <div class="flex flex-1 items-center mr-12">
-              <label for="to" class="mr-4"> To: </label>
+            <div class="block md:flex flex-1 items-center mb-4 lg:mb-0 lg:mr-4 xl:mr-12">
+              <label for="to" class="mr-4 w-32 lg:w-auto"> To: </label>
               <Select class="w-full" id="to" name="to" @change="(event) => (searchFlightsForm.arrivalAirport = event.target.value)">
                 <option value="" disabled :selected="searchFlightsForm.arrivalAirport == ''">Arrival Airport</option>
                 <option :key="airport.id" :selected="airport.id == searchFlightsForm.arrivalAirport" :value="airport.id" v-for="airport in airports">
@@ -33,9 +33,9 @@
                 </option>
               </Select>
             </div>
-            <div class="flex flex-1 items-center">
-              <label for="passengers-count" class="mr-4"> Passengers: </label>
-              <div class="flex bg-gray-100 w-full justify-between rounded-md overflow-hidden">
+            <div class="block md:flex flex-1 items-center">
+              <label for="passengers-count" class="mr-4 w-32 lg:w-auto"> Passengers: </label>
+              <div class="flex bg-gray-100 w-24 lg:w-full justify-between rounded-md overflow-hidden">
                 <button type="button" @click="(event) => (searchFlightsForm.passengerCount > 1 ? (searchFlightsForm.passengerCount -= 1) : '')" class="bg-gray-600 text-white text-2xl leading-8 h-8 w-6 mr-2 font-semibold flex-1">-</button>
                 <p class="flex-1 flex items-center justify-center">{{ searchFlightsForm.passengerCount }}</p>
                 <button type="button" @click="(event) => (searchFlightsForm.passengerCount += 1)" class="bg-gray-600 text-white text-2xl leading-8 h-8 w-6 ml-2 font-semibold flex-1">+</button>
@@ -43,20 +43,20 @@
             </div>
           </div>
           <div class="text-right mt-4">
-            <Button> Search </Button>
+            <Button class="justify-center w-full lg:inline-flex lg:w-auto"> Search </Button>
           </div>
         </form>
       </div>
-      <div v-if="flightFoundStatus !== 'not-searched'" class="mt-8 mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md">
+      <div v-if="flightFoundStatus !== 'not-searched'" class="mt-8 mx-auto max-w-6xl w-full bg-white p-4 lg:p-8 shadow-md">
         <div v-if="flightFoundStatus === 'not-found'">
           <h2 class="font-semibold text-2xl text-center">No flight found.</h2>
         </div>
         <div v-if="flightFoundStatus === 'found'">
-          <div class="border-b border-cool-gray-200 pb-2 flex items-center justify-between">
-            <h2 class="font-semibold text-2xl">Flight List</h2>
+          <div class="border-b border-cool-gray-200 pb-2 lg:flex items-center justify-between">
+            <h2 class="text-center mb-2 lg:text-left lg:mb-0 font-semibold text-2xl">Flight List</h2>
             <div class="flex items-center">
-              <label class="mr-4" for="flight-sort">Sort By</label>
-              <Select id="flight-sort" @change="sortBy">
+              <label class="mr-4 whitespace-no-wrap" for="flight-sort">Sort By</label>
+              <Select id="flight-sort" class="w-full lg:w-auto" @change="sortBy">
                 <option disabled :selected="flightListSortBy === ''">Select To Sort</option>
                 <option value="price" :selected="flightListSortBy === 'price'">Price</option>
                 <option value="time" :selected="flightListSortBy === 'time'">Flight Time</option>
@@ -64,11 +64,11 @@
             </div>
           </div>
           <div class="mt-4">
-            <div class="flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList" @click="() => openPurchase(flight)">
-              <div class="flex items-center" style="flex: 2">
-                <div class="flex flex-col justify-start items-start w-24">
-                  <span class="text-sm text-gray-700 font-medium">{{ flight.from.airport.code_name }}</span>
-                  <span class="text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.from.time }}</span>
+            <div class="flex flex-col lg:flex-row py-4 px-8 bg-gray-50 cursor-pointer border-b border-gray-200" :key="key" v-for="(flight, key) in flightList" @click="() => openPurchase(flight)">
+              <div class="flex-col lg:flex-row flex items-center" style="flex: 2">
+                <div class="flex flex-row lg:flex-col justify-center lg:justify-start items-center lg:items-start w-auto lg:w-24 mb-2 lg:mb-0">
+                  <span class="text-lg lg:text-sm text-gray-700 font-bold lg:font-medium mr-4 lg:mr-0">{{ flight.from.airport.code_name }}</span>
+                  <span class="text-lg lg:text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.from.time }}</span>
                 </div>
                 <div class="mx-auto">
                   <div v-if="flight.via !== false">
@@ -76,7 +76,7 @@
                       Via<br />
                       <span v-for="(v, key) in flight.via" :key="key">
                         {{ v.airport.full_name }}
-                        <span v-if="key < flight.via.length - 1"> -> </span>
+                        <span v-if="key < flight.via.length - 1" class="hidden lg:inline"> -> </span>
                       </span>
                     </p>
                     <svg class="w-20 my-2 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" id="icon-arrow-way-stop">
@@ -100,13 +100,13 @@
                     <p class="text-sm text-gray-500 text-center">{{ Math.floor(flight.time / 60) }} hours {{ flight.time % 60 }} minutes</p>
                   </div>
                 </div>
-                <div class="flex flex-col justify-start items-start w-24">
-                  <span class="text-sm text-gray-700 font-medium">{{ flight.to.airport.code_name }}</span>
-                  <span class="text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.to.time }}</span>
+                <div class="flex flex-row lg:flex-col justify-center lg:justify-start items-center lg:items-start w-auto lg:w-24 mt-2 lg:mt-0">
+                  <span class="text-lg lg:text-sm text-gray-700 font-bold lg:font-medium mr-4 lg:mr-0">{{ flight.to.airport.code_name }}</span>
+                  <span class="text-lg lg:text-2xl text-gray-900 font-bold tracking-tighter">{{ flight.to.time }}</span>
                 </div>
               </div>
-              <div class="flex-1 flex items-center justify-end">
-                <span class="text-2xl font-bold text-gray-900"> ${{ flight.price }} </span>
+              <div class="flex-1 flex items-center justify-center lg:justify-end mt-4 lg:mt-0">
+                <span class="text-lg lg:text-2xl font-bold text-gray-900"> ${{ flight.price }} </span>
               </div>
             </div>
           </div>

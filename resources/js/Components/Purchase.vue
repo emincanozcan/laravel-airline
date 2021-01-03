@@ -9,26 +9,26 @@
           <table class="table border-collapse table-auto w-full">
             <tr class="border-dashed border border-cool-gray-300">
               <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">From</td>
-              <td class="px-4 py-2 flex justify-between items-center">
+              <td class="px-4 py-2 flex flex-col md:flex-row justify-between items-center">
                 <span class="font-medium text-cool-gray-800"> {{ flightData.route[0].full_name }} </span>
-                <span class="font-medium text-cool-gray-500 text-sm ml-8">{{ flightData.flights[0].departure_time }}</span>
+                <span class="font-medium text-cool-gray-500 text-sm ml-0 md:ml-4">{{ flightData.flights[0].departure_time }}</span>
               </td>
             </tr>
 
             <tr class="border-dashed border border-cool-gray-300">
               <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">To</td>
-              <td class="px-4 py-2 flex justify-between items-center">
+              <td class="px-4 py-2 flex flex-col md:flex-row justify-between items-center">
                 <span class="font-medium text-cool-gray-800"> {{ flightData.route[flightData.route.length - 1].full_name }} </span>
-                <span class="font-medium text-cool-gray-500 text-sm ml-4">{{ flightData.flights[flightData.flights.length - 1].arrival_time }}</span>
+                <span class="font-medium text-cool-gray-500 text-sm ml-0 md:ml-4">{{ flightData.flights[flightData.flights.length - 1].arrival_time }}</span>
               </td>
             </tr>
 
             <tr class="border-dashed border border-cool-gray-300" v-if="flightData.route.length > 2">
               <td class="font-semibold border-r border-cool-gray-200 px-4 py-2">Via</td>
               <td class="px-4 py-2">
-                <span class="font-medium text-cool-gray-800 mr-2" v-for="i in flightData.route.length - 2" :key="i">
+                <span class="font-medium text-cool-gray-800 mr-2 block md:inline" v-for="i in flightData.route.length - 2" :key="i">
                   {{ flightData.route[i].full_name }}
-                  <span v-if="i + 3 <= flightData.route.length" class="ml-2"> -> </span>
+                  <span v-if="i + 3 <= flightData.route.length" class="ml-2 hidden md:inline"> -> </span>
                 </span>
               </td>
             </tr>
@@ -51,8 +51,8 @@
         </div>
         <div v-show="!loading" class="mt-8 mb-6">
           <h3 class="font-black tracking-wider mb-4">Payment Details</h3>
-          <div class="flex justify-between mb-4">
-            <input class="form-input rounded-md shadow-sm flex-1 mr-8" type="text" v-model="cardEmail" placeholder="Email" />
+          <div class="flex justify-between mb-4 flex-col lg:flex-row">
+            <input class="form-input rounded-md shadow-sm flex-1 mb-4 lg:mb-0 lg:mr-8" type="text" v-model="cardEmail" placeholder="Email" />
             <input class="form-input rounded-md shadow-sm flex-1" type="text" v-model="cardName" placeholder="Name" />
           </div>
           <div id="card-element"></div>

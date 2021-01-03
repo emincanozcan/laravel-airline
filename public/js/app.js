@@ -6235,6 +6235,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -6288,6 +6293,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       flightList: [],
       flightListSortBy: ''
     };
+  },
+  computed: {
+    flightFoundStatus: function flightFoundStatus() {
+      if (this.flights.length > 0) return 'found';
+      if (new URLSearchParams(window.location.search).has('departureAirport')) return 'not-found';
+      return 'not-searched';
+    }
   },
   methods: {
     openPurchase: function openPurchase(flight) {
@@ -41842,7 +41854,7 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.flights
+        _vm.flightFoundStatus !== "not-searched"
           ? _c(
               "div",
               {
@@ -41850,298 +41862,341 @@ var render = function() {
                   "mt-8 mx-auto max-w-6xl w-full bg-white px-8 py-8 shadow-md"
               },
               [
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "border-b border-cool-gray-200 pb-2 flex items-center justify-between"
-                  },
-                  [
-                    _c("h2", { staticClass: "font-semibold text-2xl" }, [
-                      _vm._v("Flight List")
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "flex items-center" },
-                      [
-                        _c(
-                          "label",
-                          {
-                            staticClass: "mr-4",
-                            attrs: { for: "flight-sort" }
-                          },
-                          [_vm._v("Sort By")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "Select",
-                          {
-                            attrs: { id: "flight-sort" },
-                            on: { change: _vm.sortBy }
-                          },
-                          [
-                            _c(
-                              "option",
-                              {
-                                attrs: { disabled: "" },
-                                domProps: {
-                                  selected: _vm.flightListSortBy === ""
-                                }
-                              },
-                              [_vm._v("Select To Sort")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "option",
-                              {
-                                attrs: { value: "price" },
-                                domProps: {
-                                  selected: _vm.flightListSortBy === "price"
-                                }
-                              },
-                              [_vm._v("Price")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "option",
-                              {
-                                attrs: { value: "time" },
-                                domProps: {
-                                  selected: _vm.flightListSortBy === "time"
-                                }
-                              },
-                              [_vm._v("Flight Time")]
-                            )
-                          ]
-                        )
-                      ],
-                      1
-                    )
-                  ]
-                ),
+                _vm.flightFoundStatus === "not-found"
+                  ? _c("div", [
+                      _c(
+                        "h2",
+                        { staticClass: "font-semibold text-2xl text-center" },
+                        [_vm._v("No flight found.")]
+                      )
+                    ])
+                  : _vm._e(),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "mt-4" },
-                  _vm._l(_vm.flightList, function(flight, key) {
-                    return _c(
-                      "div",
-                      {
-                        key: key,
-                        staticClass:
-                          "flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200",
-                        on: {
-                          click: function() {
-                            return _vm.openPurchase(flight)
-                          }
-                        }
-                      },
-                      [
-                        _c(
-                          "div",
-                          {
-                            staticClass: "flex items-center",
-                            staticStyle: { flex: "2" }
-                          },
-                          [
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "flex flex-col justify-start items-start w-24"
-                              },
-                              [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "text-sm text-gray-700 font-medium"
-                                  },
-                                  [
-                                    _vm._v(
-                                      _vm._s(flight.from.airport.code_name)
-                                    )
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "text-2xl text-gray-900 font-bold tracking-tighter"
-                                  },
-                                  [_vm._v(_vm._s(flight.from.time))]
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "mx-auto" }, [
-                              flight.via !== false
-                                ? _c("div", [
-                                    _c(
-                                      "p",
-                                      {
-                                        staticClass:
-                                          "text-sm text-gray-500 text-center"
-                                      },
-                                      [
-                                        _vm._v("\n                  Via"),
-                                        _c("br"),
-                                        _vm._v(" "),
-                                        _vm._l(flight.via, function(v, key) {
-                                          return _c("span", { key: key }, [
-                                            _vm._v(
-                                              "\n                    " +
-                                                _vm._s(v.airport.full_name) +
-                                                "\n                    "
-                                            ),
-                                            key < flight.via.length - 1
-                                              ? _c("span", [_vm._v(" -> ")])
-                                              : _vm._e()
-                                          ])
-                                        })
-                                      ],
-                                      2
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "svg",
-                                      {
-                                        staticClass: "w-20 my-2 mx-auto",
-                                        attrs: {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 72 12",
-                                          id: "icon-arrow-way-stop"
-                                        }
-                                      },
-                                      [
-                                        _c("path", {
-                                          attrs: {
-                                            fill: "#C8CACC",
-                                            "fill-rule": "evenodd",
-                                            d:
-                                              "M39.952 6.623a4.001 4.001 0 11-.037-1.448h29.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H39.915a4.49 4.49 0 00.037-.202zM7.915 5.175h24.17a4.017 4.017 0 000 1.65H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825zM36 9a3 3 0 100-6 3 3 0 000 6z"
-                                          }
-                                        })
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "p",
-                                      {
-                                        staticClass:
-                                          "text-sm text-gray-500 text-center"
-                                      },
-                                      [
-                                        _vm._v(
-                                          _vm._s(Math.floor(flight.time / 60)) +
-                                            " hours " +
-                                            _vm._s(flight.time % 60) +
-                                            " minutes"
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                : _c("div", [
-                                    _c(
-                                      "p",
-                                      {
-                                        staticClass:
-                                          "text-sm text-gray-500 text-center"
-                                      },
-                                      [_vm._v("Direct Flight")]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "svg",
-                                      {
-                                        staticClass: "w-20 mx-auto my-2",
-                                        attrs: {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 72 12",
-                                          id: "icon-arrow-way"
-                                        }
-                                      },
-                                      [
-                                        _c("path", {
-                                          attrs: {
-                                            fill: "#C8CACC",
-                                            "fill-rule": "evenodd",
-                                            d:
-                                              "M7.915 5.175h61.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825z"
-                                          }
-                                        })
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "p",
-                                      {
-                                        staticClass:
-                                          "text-sm text-gray-500 text-center"
-                                      },
-                                      [
-                                        _vm._v(
-                                          _vm._s(Math.floor(flight.time / 60)) +
-                                            " hours " +
-                                            _vm._s(flight.time % 60) +
-                                            " minutes"
-                                        )
-                                      ]
-                                    )
-                                  ])
-                            ]),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "flex flex-col justify-start items-start w-24"
-                              },
-                              [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "text-sm text-gray-700 font-medium"
-                                  },
-                                  [_vm._v(_vm._s(flight.to.airport.code_name))]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "text-2xl text-gray-900 font-bold tracking-tighter"
-                                  },
-                                  [_vm._v(_vm._s(flight.to.time))]
-                                )
-                              ]
-                            )
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass: "flex-1 flex items-center justify-end"
-                          },
-                          [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "text-2xl font-bold text-gray-900"
-                              },
-                              [_vm._v(" $" + _vm._s(flight.price) + " ")]
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  }),
-                  0
-                )
+                _vm.flightFoundStatus === "found"
+                  ? _c("div", [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "border-b border-cool-gray-200 pb-2 flex items-center justify-between"
+                        },
+                        [
+                          _c("h2", { staticClass: "font-semibold text-2xl" }, [
+                            _vm._v("Flight List")
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "flex items-center" },
+                            [
+                              _c(
+                                "label",
+                                {
+                                  staticClass: "mr-4",
+                                  attrs: { for: "flight-sort" }
+                                },
+                                [_vm._v("Sort By")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "Select",
+                                {
+                                  attrs: { id: "flight-sort" },
+                                  on: { change: _vm.sortBy }
+                                },
+                                [
+                                  _c(
+                                    "option",
+                                    {
+                                      attrs: { disabled: "" },
+                                      domProps: {
+                                        selected: _vm.flightListSortBy === ""
+                                      }
+                                    },
+                                    [_vm._v("Select To Sort")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "option",
+                                    {
+                                      attrs: { value: "price" },
+                                      domProps: {
+                                        selected:
+                                          _vm.flightListSortBy === "price"
+                                      }
+                                    },
+                                    [_vm._v("Price")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "option",
+                                    {
+                                      attrs: { value: "time" },
+                                      domProps: {
+                                        selected:
+                                          _vm.flightListSortBy === "time"
+                                      }
+                                    },
+                                    [_vm._v("Flight Time")]
+                                  )
+                                ]
+                              )
+                            ],
+                            1
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "mt-4" },
+                        _vm._l(_vm.flightList, function(flight, key) {
+                          return _c(
+                            "div",
+                            {
+                              key: key,
+                              staticClass:
+                                "flex py-3 px-8 bg-gray-50 cursor-pointer border-b border-gray-200",
+                              on: {
+                                click: function() {
+                                  return _vm.openPurchase(flight)
+                                }
+                              }
+                            },
+                            [
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "flex items-center",
+                                  staticStyle: { flex: "2" }
+                                },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "flex flex-col justify-start items-start w-24"
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "text-sm text-gray-700 font-medium"
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              flight.from.airport.code_name
+                                            )
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "text-2xl text-gray-900 font-bold tracking-tighter"
+                                        },
+                                        [_vm._v(_vm._s(flight.from.time))]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "mx-auto" }, [
+                                    flight.via !== false
+                                      ? _c("div", [
+                                          _c(
+                                            "p",
+                                            {
+                                              staticClass:
+                                                "text-sm text-gray-500 text-center"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                    Via"
+                                              ),
+                                              _c("br"),
+                                              _vm._v(" "),
+                                              _vm._l(flight.via, function(
+                                                v,
+                                                key
+                                              ) {
+                                                return _c(
+                                                  "span",
+                                                  { key: key },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                      " +
+                                                        _vm._s(
+                                                          v.airport.full_name
+                                                        ) +
+                                                        "\n                      "
+                                                    ),
+                                                    key < flight.via.length - 1
+                                                      ? _c("span", [
+                                                          _vm._v(" -> ")
+                                                        ])
+                                                      : _vm._e()
+                                                  ]
+                                                )
+                                              })
+                                            ],
+                                            2
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "svg",
+                                            {
+                                              staticClass: "w-20 my-2 mx-auto",
+                                              attrs: {
+                                                xmlns:
+                                                  "http://www.w3.org/2000/svg",
+                                                viewBox: "0 0 72 12",
+                                                id: "icon-arrow-way-stop"
+                                              }
+                                            },
+                                            [
+                                              _c("path", {
+                                                attrs: {
+                                                  fill: "#C8CACC",
+                                                  "fill-rule": "evenodd",
+                                                  d:
+                                                    "M39.952 6.623a4.001 4.001 0 11-.037-1.448h29.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H39.915a4.49 4.49 0 00.037-.202zM7.915 5.175h24.17a4.017 4.017 0 000 1.65H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825zM36 9a3 3 0 100-6 3 3 0 000 6z"
+                                                }
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "p",
+                                            {
+                                              staticClass:
+                                                "text-sm text-gray-500 text-center"
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(
+                                                  Math.floor(flight.time / 60)
+                                                ) +
+                                                  " hours " +
+                                                  _vm._s(flight.time % 60) +
+                                                  " minutes"
+                                              )
+                                            ]
+                                          )
+                                        ])
+                                      : _c("div", [
+                                          _c(
+                                            "p",
+                                            {
+                                              staticClass:
+                                                "text-sm text-gray-500 text-center"
+                                            },
+                                            [_vm._v("Direct Flight")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "svg",
+                                            {
+                                              staticClass: "w-20 mx-auto my-2",
+                                              attrs: {
+                                                xmlns:
+                                                  "http://www.w3.org/2000/svg",
+                                                viewBox: "0 0 72 12",
+                                                id: "icon-arrow-way"
+                                              }
+                                            },
+                                            [
+                                              _c("path", {
+                                                attrs: {
+                                                  fill: "#C8CACC",
+                                                  "fill-rule": "evenodd",
+                                                  d:
+                                                    "M7.915 5.175h61.172l-3.89-3.768a.796.796 0 010-1.163.863.863 0 011.202 0l5.35 5.17.036.04.031.038c.04.052.063.083.08.113l.028.06a.42.42 0 01.04.105l.023.087.009.074.004.047v.04l-.004.051-.01.074-.017.074a.776.776 0 01-.045.122l-.027.056c-.018.03-.04.06-.063.096l-.04.043-.045.052-5.35 5.17a.863.863 0 01-1.202 0 .796.796 0 010-1.163l3.89-3.768H7.915A4.001 4.001 0 010 6a4 4 0 017.915-.825z"
+                                                }
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "p",
+                                            {
+                                              staticClass:
+                                                "text-sm text-gray-500 text-center"
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(
+                                                  Math.floor(flight.time / 60)
+                                                ) +
+                                                  " hours " +
+                                                  _vm._s(flight.time % 60) +
+                                                  " minutes"
+                                              )
+                                            ]
+                                          )
+                                        ])
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "flex flex-col justify-start items-start w-24"
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "text-sm text-gray-700 font-medium"
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(flight.to.airport.code_name)
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "text-2xl text-gray-900 font-bold tracking-tighter"
+                                        },
+                                        [_vm._v(_vm._s(flight.to.time))]
+                                      )
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "flex-1 flex items-center justify-end"
+                                },
+                                [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "text-2xl font-bold text-gray-900"
+                                    },
+                                    [_vm._v(" $" + _vm._s(flight.price) + " ")]
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        }),
+                        0
+                      )
+                    ])
+                  : _vm._e()
               ]
             )
           : _vm._e(),

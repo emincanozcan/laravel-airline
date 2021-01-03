@@ -24,12 +24,17 @@ class ConnectedFlightService
     $this->passengerCount = $passengerCount;
 
     $this->flightList = [];
-    $a = Carbon::parse($fromDate)->setHour(0)->setMinutes(0)->setSeconds(0)->addHours(48);
+    $maxArrivalTime = Carbon::parse($fromDate)->setHour(0)->setMinutes(0)->setSeconds(0)->addHours(48);
     $flightList = Flight::where("departure_time", ">", $fromDate)
       ->where("departure_time", ">", Carbon::now()->toDateTimeString())
       ->where("departure_time", "<", $endDate)
+<<<<<<< Updated upstream
       ->where("arrival_time", "<", $a)
       ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount])
+=======
+      ->where("arrival_time", "<", $maxArrivalTime)
+      ->whereRaw('capacity > (sold_count + ? - 1)', [$passengerCount]) 
+>>>>>>> Stashed changes
       ->with(['departureAirport', 'arrivalAirport'])
       ->get();
 
@@ -123,39 +128,4 @@ class ConnectedFlightService
     }
     return $connectedFlights;
   }
-
-  // @old method
-  // public static function find($from, $to, $startDate, $endDate, $passengerCount)
-  // {
-  //   $connectedFlights = [];
-  //   $startPointFlights = Flight::from($from, $startDate, $endDate, $passengerCount)->with(['departureAirport', 'arrivalAirport'])->get();
-
-  //   $endPointFlights = Flight::query();
-  //   $endPointFlights->with(['departureAirport', 'arrivalAirport']);
-
-  //   $startPointFlights->each(function ($flight) use ($endPointFlights, $to, $passengerCount) {
-  //     $maxDepTime = (Carbon::parse($flight->arrival_time))->addHours(12);
-  //     $minDepTime = (Carbon::parse($flight->arrival_time))->addHours(1);
-  //     $endPointFlights->orWhere(function ($q) use ($flight, $to, $passengerCount, $maxDepTime, $minDepTime) {
-  //       $q->direct($flight->arrival_airport, $to, $minDepTime, $maxDepTime, $passengerCount);
-  //     });
-  //   });
-
-  //   $endPointFlights = $endPointFlights->get();
-
-  //   $startPointFlights->each(function ($startFlight) use ($endPointFlights, &$connectedFlights, $passengerCount) {
-  //     $endPointFlights->each(function ($endFlight) use ($startFlight, &$connectedFlights, $passengerCount) {
-  //       if ($startFlight->arrival_airport == $endFlight->departure_airport && $endFlight->departure_time > $startFlight->arrival_time) {
-  //         $price = ($startFlight->price + $endFlight->price) * $passengerCount;
-  //         $flightTime = Carbon::parse($endFlight->arrival_time)->diffInMinutes(Carbon::parse($startFlight->departure_time));
-  //         $connectedFlights[] = [
-  //           'price' => $price,
-  //           'time' => $flightTime,
-  //           'flights' => [$startFlight, $endFlight]
-  //         ];
-  //       }
-  //     });
-  //   });
-  //   return $connectedFlights;
-  // }
 }

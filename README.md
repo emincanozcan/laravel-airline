@@ -7,7 +7,7 @@ The topic of school project is developing web application with Laravel and deplo
 
 Airline company ticket sale system selected as demo application topic and some features coded.
 
-To show live demo of project, go to https://airline.emincanozcan.com/
+To see live demo of the project, go to https://airline.emincanozcan.com/
 
 The admin panel can be accessible via https://airline.emincanozcan.com/dashboard
 

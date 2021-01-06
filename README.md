@@ -7,6 +7,11 @@ The topic of school project is developing web application with Laravel and deplo
 
 Airline company ticket sale system selected as demo application topic and some features coded.
 
+To show live demo of project, go to https://airline.emincanozcan.com/
+
+The admin panel can be accessible via https://airline.emincanozcan.com/dashboard
+
+To get administrator account to see admin interface and manage the app, mail me at emincanozcann@gmail.com
 ## What does the project include?
 * Administrator can create flights between airports with some informations which are departure and arrival airports, departure and arrival times, ticket price and flight capacity.
 * Administrator can list flights with some filters.
